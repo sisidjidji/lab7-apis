@@ -86,7 +86,7 @@ function Location(city, geoData) {
   this.formatted_query = geoData[0].display_name;
   this.latitude = parseFloat(geoData[0].lat);
   this.longitude = parseFloat(geoData[0].lon);
-  this.map=parseFloat(geoData[0].mapURL);
+  this.map=geoData[0].mapURL;
 
 }
 
