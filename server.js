@@ -19,28 +19,27 @@ app.use(cors()); // Middleware
 app.get('/weather', weatherHandler) ;
 
 function weatherHandler(request, response) {
-  const weather =request.query.search_query;
+  const weather=request.query.search_query;
   const url = 'https://api.weatherbit.io/v2.0/current';
   superagent.get(url)
   .query({
     key: process.env.WEATHER_KEY,
-    q:wether, // query
+    q:weather, // query
     format: 'json'
   })
   .then(wetherResponse => {
     let weatherData=wetherResponse.body;
     let x= weatherData.data.map( dailyWeather=>{
-
-      new Weather(dailyWeather);
+          return new Weather(dailyWeather);
   })
   response.send(x);
 })
   .catch(err => {
     console.log(err);
     errorHandler(err, request, response);
-  });
+  })
  
-
+}
 
 
 app.get('/location', locationHandler);
@@ -103,6 +102,9 @@ function Location(city, geoData) {
   this.map= geoData[0].mapURL;
 
 }
+
+
+
 
 function Weather(weatherData){
   this.forecast = weatherData.weather.description;
