@@ -7,7 +7,7 @@ dotenv.config();
 // Application Dependencies
 const express = require('express');
 const cors = require('cors');
-
+const superagent=require('superagent');
 // Application Setup
 const PORT = process.env.PORT;
 const app = express();
@@ -18,39 +18,42 @@ app.use(cors()); // Middleware
 
 app.get('/weather', weatherHandler) ;
 
-function weatherHandler(request, response) {
-  const weatherData=require('./data/darksky.json');
-  // const weather=[];
-let x= weatherData.daily.data.map( dailyWeather=>{
-    // eslint-disable-next-line semi
-    new Weather(dailyWeathe);
-  });
-  response.send(x);
-}
+// function weatherHandler(request, response) {
+//   const weatherData=require('./data/darksky.json');
+//   // const weather=[];
+// let x= weatherData.daily.data.map( dailyWeather=>{
+//     // eslint-disable-next-line semi
+//     new Weather(dailyWeather);
+//   });
+//   response.send(x);
+// }
 
 // Add /location route
 app.get('/location', locationHandler);
-
-// Route Handler
 function locationHandler(request, response) {
+  // const geoData = require('./data/geo.json');
   const city = request.query.city;
-  // const location = new Location(city, geoData);
-  const url='https://us1.locationiq/v1/search.php'
-  superagent.get(url)
-  .query({
-    key:process.env.GEO_KEY,
-    q:city,
-    format:'json'
-  })
 
-  .then(locationResponse=>{
-    let geoData=locationResponse.body;
-    const location = new Location(city,geoData);
-    response.send(location);
-  })
-  .catch(err=>{
-    errorHandler(err,request,response);
-  })
+  const url = 'https://us1.locationiq.com/v1/search.php';
+  superagent.get(url)
+    .query({
+      key: process.env.GEO_KEY,
+      q: city, // query
+      format: 'json'
+    })
+    .then(locationResponse => {
+      let geoData = locationResponse.body;
+      // console.log(geoData);
+
+      const location = new Location(city, geoData);
+      response.send(location);
+    })
+    .catch(err => {
+      console.log(err);
+      errorHandler(err, request, response);
+    });
+
+  // response.send('oops');
 }
 
 // Has to happen after everything else
