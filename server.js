@@ -19,13 +19,26 @@ app.use(cors()); // Middleware
 app.get('/weather', weatherHandler) ;
 
 function weatherHandler(request, response) {
-  const weatherData=require('./data/darksky.json');
-  // const weather=[];
-let x= weatherData.daily.data.map( dailyWeather=>{
-    // eslint-disable-next-line semi
-    new Weather(dailyWeather);
-  });
+  const weather=request.query.search_query;
+  const url = 'https://api.weatherbit.io/v2.0/current';
+  superagent.get(url)
+  .query({
+    key: process.env.WEATHER_KEY,
+    city:weather, // query
+    format: 'json'
+  })
+  .then(weatherResponse => {
+    let weatherData=weatherResponse.body;
+    let x= weatherData.data.map( dailyWeather=>{
+          return new Weather(dailyWeather);
+  })
   response.send(x);
+})
+  .catch(err => {
+    console.log(err);
+    errorHandler(err, request, response);
+  })
+ 
 }
 
 
@@ -86,11 +99,14 @@ function Location(city, geoData) {
   this.formatted_query = geoData[0].display_name;
   this.latitude = parseFloat(geoData[0].lat);
   this.longitude = parseFloat(geoData[0].lon);
-  this.map=geoData[0].mapURL;
+  this.map= geoData[0].mapURL;
 
 }
 
+
+
+
 function Weather(weatherData){
-  this.forecast = weatherData.summary;
-  this.time = new Date(weatherData.time * 1000);
+  this.forecast = weatherData.weather.description;
+  this.time = new Date(weatherData.ob_time);
 }
