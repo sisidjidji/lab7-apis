@@ -7,7 +7,7 @@ dotenv.config();
 // Application Dependencies
 const express = require('express');
 const cors = require('cors');
-const superagent=require('superagent');
+const superagent = require('superagent');
 // Application Setup
 const PORT = process.env.PORT;
 const app = express();
@@ -18,18 +18,19 @@ app.use(cors()); // Middleware
 
 app.get('/weather', weatherHandler) ;
 
-// function weatherHandler(request, response) {
-//   const weatherData=require('./data/darksky.json');
-//   // const weather=[];
-// let x= weatherData.daily.data.map( dailyWeather=>{
-//     // eslint-disable-next-line semi
-//     new Weather(dailyWeather);
-//   });
-//   response.send(x);
-// }
+function weatherHandler(request, response) {
+  const weatherData=require('./data/darksky.json');
+  // const weather=[];
+let x= weatherData.daily.data.map( dailyWeather=>{
+    // eslint-disable-next-line semi
+    new Weather(dailyWeather);
+  });
+  response.send(x);
+}
 
-// Add /location route
+
 app.get('/location', locationHandler);
+
 function locationHandler(request, response) {
   // const geoData = require('./data/geo.json');
   const city = request.query.city;
@@ -85,6 +86,8 @@ function Location(city, geoData) {
   this.formatted_query = geoData[0].display_name;
   this.latitude = parseFloat(geoData[0].lat);
   this.longitude = parseFloat(geoData[0].lon);
+  this.map=parseFloat(geoData[0].mapURL);
+
 }
 
 function Weather(weatherData){
