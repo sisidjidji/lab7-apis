@@ -24,11 +24,11 @@ function weatherHandler(request, response) {
   superagent.get(url)
   .query({
     key: process.env.WEATHER_KEY,
-    q:weather, // query
+    city:weather, // query
     format: 'json'
   })
-  .then(wetherResponse => {
-    let weatherData=wetherResponse.body;
+  .then(weatherResponse => {
+    let weatherData=weatherResponse.body;
     let x= weatherData.data.map( dailyWeather=>{
           return new Weather(dailyWeather);
   })
@@ -108,5 +108,5 @@ function Location(city, geoData) {
 
 function Weather(weatherData){
   this.forecast = weatherData.weather.description;
-  this.time = new Date(weatherData.weather.ob_time);
+  this.time = new Date(weatherData.ob_time);
 }
