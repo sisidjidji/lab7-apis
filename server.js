@@ -30,7 +30,7 @@ function weatherHandler(request, response) {
   .then(weatherResponse => {
     let weatherData=weatherResponse.body;
     let x= weatherData.data.map( dailyWeather=>{
-          new Weather(dailyWeather);
+          return new Weather(dailyWeather);
   })
   response.send(x);
 })
