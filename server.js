@@ -30,7 +30,7 @@ function weatherHandler(request, response) {
   .then(weatherResponse => {
     let weatherData=weatherResponse.body;
     let x= weatherData.data.map( dailyWeather=>{
-          return new Weather(dailyWeather);
+          new Weather(dailyWeather);
   })
   response.send(x);
 })
@@ -99,8 +99,6 @@ function Location(city, geoData) {
   this.formatted_query = geoData[0].display_name;
   this.latitude = parseFloat(geoData[0].lat);
   this.longitude = parseFloat(geoData[0].lon);
-  this.map= geoData[0].mapURL;
-
 }
 
 
