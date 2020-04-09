@@ -18,24 +18,24 @@ app.get('/weather', weatherHandler) ;
 
 function weatherHandler(request, response) {
   const weather=request.query.search_query;
-  const url = 'https://api.weatherbit.io/v2.0/current';
+  const url = 'https://api.weatherbit.io/v2.0/forecast/daily';
   superagent.get(url)
-  .query({
-    key: process.env.WEATHER_KEY,
-    city:weather, // query
-    format: 'json'
-  })
-  .then(weatherResponse => {
-    let weatherData=weatherResponse.body;
-    let x= weatherData.data.map( dailyWeather=>{
-          return new Weather(dailyWeather);
-  })
-  response.send(x);
-})
-  .catch(err => {
-    console.log(err);
-    errorHandler(err, request, response);
-  })
+    .query({
+      key: process.env.WEATHER_KEY,
+      city:weather, // query
+      format: 'json'
+    })
+    .then(weatherResponse => {
+      let weatherData=weatherResponse.body;
+      let x= weatherData.data.map( dailyWeather=>{
+        return new Weather(dailyWeather);
+      })
+      response.send(x);
+    })
+    .catch(err => {
+      console.log(err);
+      errorHandler(err, request, response);
+    })
  
 }
 
@@ -68,10 +68,10 @@ function locationHandler(request, response) {
 }
 
 
-app.get('/trail', trailHandler);
+app.get('/trails', trailHandler);
 
 function trailHandler(request, response) {
-
+  console.log(request);
   let lat = request.query.latitude;
   let lon = request.query.longitude;
   const url = 'https://www.hikingproject.com/data/get-trails';
