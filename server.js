@@ -29,8 +29,8 @@ function weatherHandler(request, response) {
   })
   .then(weatherResponse => {
     let weatherData=weatherResponse.body;
-    let x= weatherData.data.map( dailyWeather=>{
-          return new Weather(dailyWeather);
+  weatherData.data.map( dailyWeather=>{
+           new Weather(dailyWeather);
   })
   response.send(x);
 })
@@ -70,6 +70,46 @@ function locationHandler(request, response) {
   // response.send('oops');
 }
 
+
+app.get('/trail', trailHandler);
+
+function trailHandler(request, response) {
+ 
+  const trail = request.query.search_query;
+  let lat =request.query.latitude;
+  let lon = request.query.longitude;
+  const url = 'https://www.hikingproject.com/data/get-trails';
+  superagent.get(url)
+    .query({
+      key: process.env.TRAIL_KEY,
+      lat:lat,
+      lon:lon,
+    })
+    .then(trailResponse => {
+      let trailData=trailResponse.body;
+   let y= trailData.data.map( dailytrail=>{
+            return new Trail(dailytrail);
+    })
+      response.send(y);
+    })
+    .catch(err => {
+      console.log(err);
+      errorHandler(err, request, response);
+    });
+
+  // response.send('oops');
+}
+
+
+
+
+
+
+
+
+
+
+
 // Has to happen after everything else
 app.use(notFoundHandler);
 // Has to happen after the error might have occurred
@@ -107,4 +147,10 @@ function Location(city, geoData) {
 function Weather(weatherData){
   this.forecast = weatherData.weather.description;
   this.time = new Date(weatherData.ob_time);
+}
+
+
+function Trail(trailData){
+  this.latitude=trailData.lat;
+  this.longitude=trailData.lon;
 }
