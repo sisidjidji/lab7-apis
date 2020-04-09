@@ -71,7 +71,7 @@ function locationHandler(request, response) {
 app.get('/trails', trailHandler);
 
 function trailHandler(request, response) {
-  console.log(request);
+
   let lat = request.query.latitude;
   let lon = request.query.longitude;
   const url = 'https://www.hikingproject.com/data/get-trails';
