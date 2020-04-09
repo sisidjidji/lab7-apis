@@ -14,8 +14,6 @@ const app = express();
 
 app.use(cors()); // Middleware
 
-
-
 app.get('/weather', weatherHandler) ;
 
 function weatherHandler(request, response) {
@@ -29,8 +27,8 @@ function weatherHandler(request, response) {
   })
   .then(weatherResponse => {
     let weatherData=weatherResponse.body;
-  weatherData.data.map( dailyWeather=>{
-           new Weather(dailyWeather);
+    let x= weatherData.data.map( dailyWeather=>{
+          return new Weather(dailyWeather);
   })
   response.send(x);
 })
@@ -40,7 +38,6 @@ function weatherHandler(request, response) {
   })
  
 }
-
 
 app.get('/location', locationHandler);
 
@@ -52,7 +49,7 @@ function locationHandler(request, response) {
   superagent.get(url)
     .query({
       key: process.env.GEO_KEY,
-      q: city, // query
+      q:city, // query
       format: 'json'
     })
     .then(locationResponse => {
@@ -74,22 +71,21 @@ function locationHandler(request, response) {
 app.get('/trail', trailHandler);
 
 function trailHandler(request, response) {
- 
-  const trail = request.query.search_query;
-  let lat =request.query.latitude;
+
+  let lat = request.query.latitude;
   let lon = request.query.longitude;
   const url = 'https://www.hikingproject.com/data/get-trails';
   superagent.get(url)
     .query({
       key: process.env.TRAIL_KEY,
-      lat:lat,
-      lon:lon,
+      lat: lat,
+      lon: lon,
     })
     .then(trailResponse => {
-      let trailData=trailResponse.body;
-   let y= trailData.data.map( dailytrail=>{
-            return new Trail(dailytrail);
-    })
+      let trailData = trailResponse.body;
+      let y = trailData.trails.map(dailytrail => {
+        return new Trail(dailytrail);
+      })
       response.send(y);
     })
     .catch(err => {
@@ -97,17 +93,7 @@ function trailHandler(request, response) {
       errorHandler(err, request, response);
     });
 
-  // response.send('oops');
 }
-
-
-
-
-
-
-
-
-
 
 
 // Has to happen after everything else
@@ -144,13 +130,20 @@ function Location(city, geoData) {
 
 
 
-function Weather(weatherData){
+function Weather(weatherData) {
   this.forecast = weatherData.weather.description;
   this.time = new Date(weatherData.ob_time);
 }
 
 
-function Trail(trailData){
-  this.latitude=trailData.lat;
-  this.longitude=trailData.lon;
+function Trail(trailData) {
+  this.name = trailData.name;
+  this.location = trailData.location;
+  this.length = trailData.length;
+  this.stars = trailData.stars;
+  this.starVotes = trailData.starVotes;
+  this.summary = trailData.summary;
+  this.trail_url = trailData.url;
+  this.conditions = trailData.conditionDetails;
+  this.condition_date = new Date(trailData.conditionDate).toDateString();
 }
