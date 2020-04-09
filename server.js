@@ -14,8 +14,6 @@ const app = express();
 
 app.use(cors()); // Middleware
 
-
-
 app.get('/weather', weatherHandler) ;
 
 function weatherHandler(request, response) {
@@ -41,7 +39,6 @@ function weatherHandler(request, response) {
  
 }
 
-
 app.get('/location', locationHandler);
 
 function locationHandler(request, response) {
@@ -52,7 +49,7 @@ function locationHandler(request, response) {
   superagent.get(url)
     .query({
       key: process.env.GEO_KEY,
-      q: city, // query
+      q:city, // query
       format: 'json'
     })
     .then(locationResponse => {
@@ -69,6 +66,35 @@ function locationHandler(request, response) {
 
   // response.send('oops');
 }
+
+
+app.get('/trail', trailHandler);
+
+function trailHandler(request, response) {
+
+  let lat = request.query.latitude;
+  let lon = request.query.longitude;
+  const url = 'https://www.hikingproject.com/data/get-trails';
+  superagent.get(url)
+    .query({
+      key: process.env.TRAIL_KEY,
+      lat: lat,
+      lon: lon,
+    })
+    .then(trailResponse => {
+      let trailData = trailResponse.body;
+      let y = trailData.trails.map(dailytrail => {
+        return new Trail(dailytrail);
+      })
+      response.send(y);
+    })
+    .catch(err => {
+      console.log(err);
+      errorHandler(err, request, response);
+    });
+
+}
+
 
 // Has to happen after everything else
 app.use(notFoundHandler);
@@ -104,7 +130,20 @@ function Location(city, geoData) {
 
 
 
-function Weather(weatherData){
+function Weather(weatherData) {
   this.forecast = weatherData.weather.description;
   this.time = new Date(weatherData.ob_time);
+}
+
+
+function Trail(trailData) {
+  this.name = trailData.name;
+  this.location = trailData.location;
+  this.length = trailData.length;
+  this.stars = trailData.stars;
+  this.starVotes = trailData.starVotes;
+  this.summary = trailData.summary;
+  this.trail_url = trailData.url;
+  this.conditions = trailData.conditionDetails;
+  this.condition_date = new Date(trailData.conditionDate).toDateString();
 }
